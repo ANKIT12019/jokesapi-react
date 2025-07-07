@@ -6,6 +6,8 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
   const [copied, setCopied] = useState(false);
+  const [animateJoke, setAnimateJoke] = useState(false);
+  const [animateEmoji, setAnimateEmoji] = useState(false);
 
   const generateJokes = async () => {
     setLoading(true);
@@ -19,6 +21,8 @@ function App() {
         const newHistory = [data.joke, ...prev.filter(j => j !== data.joke)];
         return newHistory.slice(0, 5);
       });
+      setAnimateJoke(true);
+      setAnimateEmoji(true);
     } catch (err) {
       setJoke('Failed to fetch joke.');
       console.error('The error is', err);
@@ -31,6 +35,20 @@ function App() {
     generateJokes();
     // eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (animateJoke) {
+      const timer = setTimeout(() => setAnimateJoke(false), 700);
+      return () => clearTimeout(timer);
+    }
+  }, [animateJoke]);
+
+  useEffect(() => {
+    if (animateEmoji) {
+      const timer = setTimeout(() => setAnimateEmoji(false), 700);
+      return () => clearTimeout(timer);
+    }
+  }, [animateEmoji]);
 
   const copyJoke = () => {
     navigator.clipboard.writeText(joke);
@@ -48,9 +66,9 @@ function App() {
         </div>
       </nav>
       <div className="joke-card">
-        <div className="emoji" aria-label="laughing">😂</div>
+        <div className={`emoji${animateEmoji ? ' bounce' : ''}`} aria-label="laughing">😂</div>
         <h1 className="main-title">Random Dad Jokes</h1>
-        <div className="joke" id="joke">
+        <div className={`joke${animateJoke ? ' fade-in' : ''}`} id="joke">
           {loading ? <span className="spinner"></span> : joke}
         </div>
         <div className="button-row">
